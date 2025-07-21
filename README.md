@@ -35,9 +35,9 @@ Accurate segmentation of brain tumors, especially `gliomas`, is vital for diagno
     
     Below is an example visualization of the segmentation mask for a patient across some slices:
     
-    <p align="center">
-      <img width="7034" height="3558" alt="seg_0002" src="https://github.com/user-attachments/assets/77764870-b251-4d58-9a71-520dc7830fa1" />
-    </p>
+  <p align="center">
+    <img width="7034" height="3558" alt="seg_0002" src="https://github.com/user-attachments/assets/77764870-b251-4d58-9a71-520dc7830fa1" />
+  </p>
 
 
 
