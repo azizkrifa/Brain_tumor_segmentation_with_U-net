@@ -13,8 +13,35 @@ Accurate segmentation of brain tumors, especially `gliomas`, is vital for diagno
     - **T1-weighted (T1):** Provides detailed `anatomical structure` of the brain.  
     - **T1-contrast enhanced (T1c):** Highlights areas with a disrupted blood-brain barrier, such as `enhancing tumors`.  
     - **T2-weighted (T2w):** Useful for visualizing `edema` and `tumor boundaries`.  
-    - **FLAIR (Fluid-Attenuated Inversion Recovery,labeled as T2f):** Suppresses fluid signals, making `edema` and `lesions` more visible.
-    
+    - **T2f or FLAIR (Fluid-Attenuated Inversion Recovery):** Suppresses fluid signals, making `edema` and `lesions` more visible.
+   
+
+
+<table align="center" >
+  <tr>
+    <td colspan="2" align="center">
+      <h3>MRI Tests on the Same Patient</h3>
+    </td>
+  </tr>
+
+  <tr>
+    <td align="center"><b>T1n</b></td>
+    <td align="center"><b>T1c</b></td>
+  </tr>
+  <tr>
+    <td><img width="600" height="3558" src="https://github.com/user-attachments/assets/93bd3548-af49-47c6-b8cf-881b033030dc" width="400"/></td>
+    <td><img width="600" height="3558" src="https://github.com/user-attachments/assets/838a8056-48f7-4d56-b3d6-593fe11362ad" width="400"/></td>
+  </tr>
+  <tr>
+    <td align="center"><b>T2f</b></td>
+    <td align="center"><b>T2w</b></td>
+  </tr>
+  <tr>
+    <td><img width="600" height="3558" src="https://github.com/user-attachments/assets/4b4f825a-c735-4de1-8dd4-3efb4b1d7ebb" width="400"/></td>
+    <td><img width="600" height="3558" src="https://github.com/user-attachments/assets/57224994-f811-4102-bfa2-804cb9892012" width="400"/></td>
+  </tr>
+</table>
+
   - Along with these MRI scans, **segmentation masks (seg)** are provided. These masks label each voxel `(pixel)` as one of the following classes:
     
     - **0:** Background (non-tumor tissue)  
