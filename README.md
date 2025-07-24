@@ -4,9 +4,9 @@ Accurate segmentation of brain tumors, especially `gliomas`, is vital for diagno
 
 -----
 
-## 📁 Dataset
+## 1. 📁 Dataset
 
-- ### MRI Modalities and Segmentation Labels
+ ### 1.1 MRI Modalities and Segmentation Labels
 
   - The BraTS 2023 dataset includes `four MRI modalities` for each patient, providing complementary information to better identify tumor regions:
     
@@ -20,7 +20,7 @@ Accurate segmentation of brain tumors, especially `gliomas`, is vital for diagno
 <table align="center" >
   <tr>
     <td colspan="2" align="center">
-      <h3>MRI Tests on the Same Patient</h3>
+      <h3>MRI Tests on the Same Patient X</h3>
     </td>
   </tr>
 
@@ -42,7 +42,7 @@ Accurate segmentation of brain tumors, especially `gliomas`, is vital for diagno
   </tr>
 </table>
 
-  - Along with these MRI scans, **segmentation masks (seg)** are provided. These masks label each voxel `(pixel)` as one of the following classes:
+  - Along with these MRI scans, **segmentation masks (seg)** are provided. These masks label each voxel `(3D pixel)` as one of the following classes:
     
     - **0:** Background (non-tumor tissue)  
     - **1:** Necrotic and non-enhancing tumor core  
@@ -51,7 +51,7 @@ Accurate segmentation of brain tumors, especially `gliomas`, is vital for diagno
     
     This multi-modal data enables the model to learn robust features across different tissue contrasts to accurately segment the tumor subregions.
 
-- ### Patient MRI Scan and Segmentation Dimensions
+  ### 1.2 Patient MRI Scan and Segmentation Dimensions
 
   - Each patient's MRI scan in the BraTS 2023 dataset has a fixed 3D volume size of **(240, 240, 155)**, representing:
     
@@ -60,11 +60,50 @@ Accurate segmentation of brain tumors, especially `gliomas`, is vital for diagno
     
   - This 3D shape allows us to analyze the brain’s structure slice-by-slice while preserving the volumetric context needed for accurate tumor segmentation.
     
-    Below is an example visualization of the segmentation mask for a patient across some slices:
+    Below is an example visualization of the segmentation mask for patient X across some slices:
     
   <p align="center">
     <img width="7034" height="3558" alt="seg_0002" src="https://github.com/user-attachments/assets/77764870-b251-4d58-9a71-520dc7830fa1" />
   </p>
+
+ ### 1.3 Dataset Ditribution
+  **Note**: The test set was created by `randomly selecting 100 samples` from the original `training se`t to evaluate the model on unseen data while preserving label distribution.
+  <p align="center">
+    <img width="590" height="390" alt="Sans titre" src="https://github.com/user-attachments/assets/ba8972c5-f62b-445e-8d99-8bdbc90d072d" />
+  </p>
+  
+  ### 1.4 Data Preprocessing
+  
+  To ensure consistency across all MRI scans and prepare the data for model training, we applied the following preprocessing steps to each subject:
+  
+  #### 1.4.1 Loading NIfTI Files  
+  Each subject includes five volumes:  
+  - T1 (T1n)  
+  - T1 contrast-enhanced (T1c)  
+  - T2-weighted (T2w)  
+  - FLAIR (T2f)  
+  - Segmentation mask  
+  
+  These files are loaded using the `nibabel` library, which reads `.nii.gz` medical imaging files and returns 3D NumPy arrays.
+  
+  #### 1.4.2 Normalization  
+  For each modality (T1, T1c, T2, FLAIR), we apply z-score normalization:  
+
+  <p align="center">
+  <img width="299" height="70" alt="image" src="https://github.com/user-attachments/assets/be72d840-f8a7-47c5-ba98-9ba98edf2575" />
+  </p>
+
+  where $\mu$ and $\sigma$ are the mean and standard deviation of the image volume. This helps the model converge faster by standardizing intensity values.
+  
+  #### 1.4.3 Resizing Volumes  
+   All modalities are resized from `240×240×155` to a fixed shape of `128×128×128` using linear interpolation (`order=1`). This standard shape ensures uniformity for training in 3D CNNs.
+  
+  #### 1.4.4 Resizing Segmentation Masks  
+   Segmentation masks are resized using nearest-neighbor interpolation (`order=0`) to preserve discrete class labels (e.g., tumor regions). The output mask is cast to `uint8` type.
+  
+  #### 1.4.5 Multi-modal Stacking  
+  The normalized and resized volumes from each modality are stacked along the last axis, resulting in a single 4D volume with shape `128×128×128×4`. This format allows the model to learn from all four modalities simultaneously.
+
 
 
 
