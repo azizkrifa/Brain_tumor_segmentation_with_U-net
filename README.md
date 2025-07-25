@@ -1,6 +1,6 @@
 # 🧠 Brain Tumor Segmentation with U-Net
 
-Accurate segmentation of brain tumors, especially `gliomas`, is vital for diagnosis and treatment planning. The `BraTS 2023` dataset provides multi-modal MRI scans with expert annotations for tumor subregions.This project uses a `U-Net model` to automatically segment brain tumors from the BraTS 2023 MRI data. U-Net’s architecture effectively captures tumor features to produce precise tumor masks, aiding clinical analysis.
+Accurate segmentation of brain tumors, especially `gliomas`, is vital for diagnosis and treatment planning. The `BraTS 2024` dataset provides multi-modal MRI scans with expert annotations for tumor subregions.This project uses a `U-Net model` to automatically segment brain tumors from the BraTS 2024 MRI data. U-Net’s architecture effectively captures tumor features to produce precise tumor masks, aiding clinical analysis.
 
 -----
 
@@ -14,8 +14,6 @@ Accurate segmentation of brain tumors, especially `gliomas`, is vital for diagno
     - **T1-contrast enhanced (T1c):** Highlights areas with a disrupted blood-brain barrier, such as `enhancing tumors`.  
     - **T2-weighted (T2w):** Useful for visualizing `edema` and `tumor boundaries`.  
     - **T2f or FLAIR (Fluid-Attenuated Inversion Recovery):** Suppresses fluid signals, making `edema` and `lesions` more visible.
-   
-
 
 <table align="center" >
   <tr>
@@ -66,11 +64,40 @@ Accurate segmentation of brain tumors, especially `gliomas`, is vital for diagno
     <img width="7034" height="3558" alt="seg_0002" src="https://github.com/user-attachments/assets/77764870-b251-4d58-9a71-520dc7830fa1" />
   </p>
 
- ### 1.3 Dataset Ditribution
+ ### 1.3 Dataset Structure|Ditribution
   **Note**: The test set was created by `randomly selecting 100 samples` from the original `training se`t to evaluate the model on unseen data while preserving label distribution.
   <p align="center">
     <img width="590" height="390" alt="Sans titre" src="https://github.com/user-attachments/assets/ba8972c5-f62b-445e-8d99-8bdbc90d072d" />
   </p>
+  
+```bash
+  BraTS 2024 dataset/
+├── train/
+│   ├── BraTS-GLI-00001-000/
+│   │   ├── BraTS-GLI-00001-000_t2f.nii.gz
+│   │   ├── BraTS-GLI-00001-000_t1n.nii.gz
+│   │   ├── BraTS-GLI-00001-000_t1c.nii.gz
+│   │   ├── BraTS-GLI-00001-000_t2w.nii.gz
+│   │   └── BraTS-GLI-00001-000_seg.nii.gz
+│   ├── BraTS-GLI-00002-000/
+│   │   └── ...
+│   └── ...
+
+├── val/
+│   ├── BraTS-GLI-00023-000/
+│   │   ├── ... (same structure as train)
+│   └── ...
+
+├── test/
+│   ├── BraTS-GLI-00041-000/
+│   │   ├── BraTS-GLI-00041-000_t2f.nii.gz
+│   │   ├── BraTS-GLI-00041-000_t1n.nii.gz
+│   │   ├── BraTS-GLI-00041-000_t1c.nii.gz
+│   │   ├── BraTS-GLI-00041-000_t2w.nii.gz
+│   │   └── BraTS-GLI-00041-000_seg.nii.gz
+│   └── ...
+```
+
   
   ### 1.4 Data Preprocessing
   
@@ -87,7 +114,7 @@ Accurate segmentation of brain tumors, especially `gliomas`, is vital for diagno
   These files are loaded using the `nibabel` library, which reads `.nii.gz` medical imaging files and returns 3D NumPy arrays.
   
   #### 1.4.2 Normalization  
-  For each modality (T1, T1c, T2, FLAIR), we apply z-score normalization:  
+  For each modality (T1, T1c, T2, FLAIR), we apply `z-score normalization`:  
 
   <p align="center">
   <img width="299" height="70" alt="image" src="https://github.com/user-attachments/assets/be72d840-f8a7-47c5-ba98-9ba98edf2575" />
