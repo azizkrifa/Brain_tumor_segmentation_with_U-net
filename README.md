@@ -8,7 +8,7 @@ Accurate segmentation of brain tumors, especially `gliomas`, is vital for diagno
 
  ### 1.1 MRI Modalities and Segmentation Labels
 
-  - The BraTS 2023 dataset includes `four MRI modalities` for each patient, providing complementary information to better identify tumor regions:
+  - The BraTS 2024 dataset includes `four MRI modalities` for each patient, providing complementary information to better identify tumor regions:
     
     - **T1-weighted (T1):** Provides detailed `anatomical structure` of the brain.  
     - **T1-contrast enhanced (T1c):** Highlights areas with a disrupted blood-brain barrier, such as `enhancing tumors`.  
@@ -27,16 +27,16 @@ Accurate segmentation of brain tumors, especially `gliomas`, is vital for diagno
     <td align="center"><b>T1c</b></td>
   </tr>
   <tr>
-    <td><img width="600" height="3558" src="https://github.com/user-attachments/assets/93bd3548-af49-47c6-b8cf-881b033030dc" width="400"/></td>
-    <td><img width="600" height="3558" src="https://github.com/user-attachments/assets/838a8056-48f7-4d56-b3d6-593fe11362ad" width="400"/></td>
+    <td><img width="600" height="400" src="https://github.com/user-attachments/assets/a442156b-c73e-4b4e-a279-7257d8ac633d" /></td>
+    <td><img width="600" height="400" src="https://github.com/user-attachments/assets/bc7c7471-084f-4347-b3c4-2c27284a7333" /></td>
   </tr>
   <tr>
     <td align="center"><b>T2f</b></td>
     <td align="center"><b>T2w</b></td>
   </tr>
   <tr>
-    <td><img width="600" height="3558" src="https://github.com/user-attachments/assets/4b4f825a-c735-4de1-8dd4-3efb4b1d7ebb" width="400"/></td>
-    <td><img width="600" height="3558" src="https://github.com/user-attachments/assets/57224994-f811-4102-bfa2-804cb9892012" width="400"/></td>
+    <td><img width="600" height="400" src="https://github.com/user-attachments/assets/b27657c9-327d-49ae-88c9-06944b982e9e" /></td>
+    <td><img width="600" height="400" src="https://github.com/user-attachments/assets/b02966ed-05f7-45ba-97fc-fe25992c8a32" /></td>
   </tr>
 </table>
 
@@ -51,10 +51,10 @@ Accurate segmentation of brain tumors, especially `gliomas`, is vital for diagno
 
   ### 1.2 Patient MRI Scan and Segmentation Dimensions
 
-  - Each patient's MRI scan in the BraTS 2023 dataset has a fixed 3D volume size of **(240, 240, 155)**, representing:
+  - Each patient's MRI scan in the BraTS 2024 dataset has a fixed 3D volume size of **(182,218,182)** representing:
     
-    - **240 × 240** pixels per slice (height × width), capturing the spatial resolution of each 2D MRI slice.
-    - **155** slices in the axial direction, representing the depth or number of cross-sectional images stacked to form the full 3D volume.
+    - **182 × 218** pixels per slice (height × width), capturing the spatial resolution of each 2D MRI slice.
+    - **182** slices in the axial direction, representing the depth or number of cross-sectional images stacked to form the full 3D volume.
     
   - This 3D shape allows us to analyze the brain’s structure slice-by-slice while preserving the volumetric context needed for accurate tumor segmentation.
     
