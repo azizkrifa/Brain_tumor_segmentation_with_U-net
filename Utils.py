@@ -2,6 +2,8 @@ import os
 import numpy as np
 import nibabel as nib
 import random
+import pandas as pd
+import matplotlib.pyplot as plt
 
 def load_nifti(path):
     return nib.load(path).get_fdata()
@@ -64,3 +66,33 @@ def data_generator(subject_dirs, batch_size):
                 continue  # skip empty batch
 
             yield batch_images, batch_masks
+
+def plot_training_history():
+
+    # Load the saved history from file
+    history = pd.read_csv("Outputs/training_log.csv")
+
+    plt.figure(figsize=(14, 5))
+
+    # Plot multiclass_dice_coefficient
+    plt.subplot(1, 2, 1)
+    plt.plot(history['multiclass_dice_coefficient'], label='Train multiclass_dice_coefficient', marker='o')
+    plt.plot(history['val_multiclass_dice_coefficient'], label='Val multiclass_dice_coefficient', marker='o')
+    plt.title('Training vs Validation multiclass_dice_coefficient')
+    plt.xlabel('Epoch')
+    plt.ylabel('multiclass_dice_coefficient')
+    plt.legend()
+    plt.grid(True)
+
+    # Plot Loss
+    plt.subplot(1, 2, 2)
+    plt.plot(history['loss'], label='Train Loss', marker='o')
+    plt.plot(history['val_loss'], label='Val Loss', marker='o')
+    plt.title('Training vs Validation Loss')
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
+    plt.legend()
+    plt.grid(True)
+
+    plt.tight_layout()
+    plt.show()
