@@ -1,71 +1,148 @@
 import os
 import numpy as np
 import nibabel as nib
-import random
 import pandas as pd
 import matplotlib.pyplot as plt
-
-def load_nifti(path):
-    return nib.load(path).get_fdata()
-
-def normalize(volume):
-    return (volume - np.mean(volume)) / np.std(volume)
-
-import scipy.ndimage
-
-def resize_volume(volume, target_shape=(128,128,128)):
-    # Compute zoom factors for each dimension
-    factors = [t / s for t, s in zip(target_shape, volume.shape)]
-    volume_resized = scipy.ndimage.zoom(volume, zoom=factors, order=1)  # order=1: linear interpolation
-    return volume_resized
-
-def preprocess_subject(path):
-    subject_id = os.path.basename(path)
-
-    flair = normalize(load_nifti(os.path.join(path, f"{subject_id}-t2f.nii.gz")))
-    t1 = normalize(load_nifti(os.path.join(path, f"{subject_id}-t1n.nii.gz")))
-    t1ce = normalize(load_nifti(os.path.join(path, f"{subject_id}-t1c.nii.gz")))
-    t2 = normalize(load_nifti(os.path.join(path, f"{subject_id}-t2w.nii.gz")))
-    seg = load_nifti(os.path.join(path, f"{subject_id}-seg.nii.gz"))
-
-    # Resize each modality
-    flair = resize_volume(flair)
-    t1 = resize_volume(t1)
-    t1ce = resize_volume(t1ce)
-    t2 = resize_volume(t2)
-
-    # For segmentation, use order=0 (nearest neighbor) to preserve labels
-    seg = scipy.ndimage.zoom(seg,
-                             zoom=[128/s for s in seg.shape],
-                             order=0).astype(np.uint8)
-
-    # Stack modalities
-    image = np.stack([flair, t1, t1ce, t2], axis=-1)
-
-    return image, seg
+from matplotlib.colors import ListedColormap
+import matplotlib.patches as mpatches
+import subprocess
+import math
+import seaborn as sns
+from glob import glob
 
 
-def data_generator(subject_dirs, batch_size):
-    while True:
-        random.shuffle(subject_dirs)
-        for i in range(0, len(subject_dirs), batch_size):
-            batch_images, batch_masks = [], []
-            batch_subjects = subject_dirs[i:i+batch_size]
-            if len(batch_subjects) == 0:
-                continue  # skip empty batch
 
-            for subject_path in batch_subjects:
-                image, mask = preprocess_subject(subject_path)
-                batch_images.append(image)
-                batch_masks.append(mask)
+def download_data():
 
-            batch_images = np.array(batch_images)
-            batch_masks = np.array(batch_masks)
+    subprocess.run(["synapse", "get", "syn64314352", "--version", "1"], check=True)
+    subprocess.run(["unzip", "/content/BraTS2024-BraTS-GLI-AdditionalTrainingData.zip", "-d", "/content/BraTS2024"], check=True)
+    os.rename("/content/BraTS2024/BraTS2024-BraTS-GLI-AdditionalTrainingData", "/content/BraTS2024/val")
 
-            if batch_images.size == 0 or batch_masks.size == 0:
-                continue  # skip empty batch
 
-            yield batch_images, batch_masks
+def plot_all_modalities(folder_path):
+
+    # Define slice indices to visualize
+    slices = list(range(0, 182, 10))
+    n_slices = len(slices)
+    cols = len(slices)
+    rows = 4  # One row for each modality
+
+    # Initialize variables for each modality
+    t1n = t1c = t2f = t2w = None
+
+    # Load modalities
+    for file in os.listdir(folder_path):
+        if file.endswith(".nii.gz") and "seg" not in file.lower() :
+            file_path = os.path.join(folder_path, file)
+            if "t1n" in file.lower():
+                t1n = nib.load(file_path).get_fdata()
+            elif "t1c" in file.lower():
+                t1c = nib.load(file_path).get_fdata()
+            elif "t2f" in file.lower():
+                t2f = nib.load(file_path).get_fdata()
+            elif "t2w" in file.lower():
+                t2w = nib.load(file_path).get_fdata()
+            
+            print(f"Loaded {file} with shape {nib.load(file_path).get_fdata().shape}")
+
+    # Plotting
+    fig, axes = plt.subplots(rows, cols, figsize=(cols * 3, rows * 3), dpi=600)
+    modalities = [("T1n", t1n), ("T1c", t1c), ("T2f", t2f), ("T2w", t2w)]
+
+    for row_idx, (label, volume) in enumerate(modalities):
+        for col_idx, slice_idx in enumerate(slices):
+            ax = axes[row_idx, col_idx]
+            ax.imshow(volume[:, :, slice_idx], cmap='magma')
+            if row_idx == 0:
+                ax.set_title(f"Slice {slice_idx}", fontsize=20)
+            if col_idx == 0:
+                ax.set_ylabel(label, fontsize=20)
+            ax.axis('off')
+
+    fig.suptitle("MRI Modalities on the Same Patient", fontsize=30)
+    plt.tight_layout()
+    plt.subplots_adjust(top=0.90)
+    plt.show()
+
+
+def plot_segmentation(seg_path):
+
+    volume=nib.load(seg_path).get_fdata()
+
+    # Define fixed colors for labels 0–3
+    cmap = ListedColormap(['black', 'gray', 'lightgreen', 'red'])
+
+    # Define label names
+    labels = {
+        0: "Background/Rest of the brain",
+        1: "Necrotic/Non-enhancing Tumor",
+        2: "Edema",
+        3: "Enhancing Tumor"
+    }
+
+    patches = [mpatches.Patch(color=cmap.colors[i], label=labels[i]) for i in range(len(labels))]
+
+    slices = list(range(0, 182, 10))
+    n_slices = len(slices)
+
+    # Define grid size (e.g., 3 rows x 6 columns)
+    cols = 6
+    rows = math.ceil(n_slices / cols)
+
+    fig, axes = plt.subplots(rows, cols, figsize=(2*cols, 2*rows),dpi=600)
+    axes = axes.flatten()
+
+    for ax, slice_idx in zip(axes, slices):
+        ax.imshow(volume[:, :, slice_idx], cmap=cmap, vmin=0, vmax=3)
+        ax.set_title(f"Slice {slice_idx}")
+        ax.axis('off')
+
+    # Hide any unused subplots if number of slices < rows*cols
+    for ax in axes[n_slices:]:
+        ax.axis('off')
+
+    # Add one legend for the whole figure
+    fig.legend(handles=patches, bbox_to_anchor=(0.99, 0.2), fontsize='x-large')
+
+    fig.suptitle("Segmentation Mask for a Patient", fontsize=20)
+
+    plt.tight_layout()
+    plt.show()
+
+
+def dislay_dataset_distribution(dataset_dir):
+   
+    train_subjects_num = len(sorted(glob(os.path.join(dataset_dir, "train", "*"))))
+    val_subjects_num = len(sorted(glob(os.path.join(dataset_dir, "val", "*"))))
+    test_subjects_num = len(sorted(glob(os.path.join(dataset_dir, "test", "*"))))
+
+    # Create DataFrame in long format
+    df = pd.DataFrame({
+        "Dataset": ["Train", "Validation", "Test"],
+        "Count": [train_subjects_num, val_subjects_num, test_subjects_num]
+    })
+
+    df = df.sort_values(by='Count', ascending=False)
+
+    # Plot
+    plt.figure(figsize=(6, 4))
+    ax = sns.barplot(data=df, x='Dataset', y='Count', palette='viridis')
+    plt.title('Sample Count per Dataset')
+
+    # Add count labels inside bars
+    for p in ax.patches:
+        height = p.get_height()
+        ax.text(
+            p.get_x() + p.get_width() / 2,
+            height / 2,
+            f'{int(height)}',
+            ha='center', va='center',
+            color='white', fontsize=12
+        )
+
+    plt.tight_layout()
+    plt.show()
+
 
 def plot_training_history():
 
