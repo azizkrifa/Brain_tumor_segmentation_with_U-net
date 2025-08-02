@@ -5,18 +5,16 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
 import matplotlib.patches as mpatches
-import subprocess
 import math
 import seaborn as sns
 from glob import glob
-
-
+from IPython import get_ipython
 
 def download_data():
-
-    subprocess.run(["synapse", "get", "syn64314352", "--version", "1"], check=True)
-    subprocess.run(["unzip", "/content/BraTS2024-BraTS-GLI-AdditionalTrainingData.zip", "-d", "/content/BraTS2024"], check=True)
-    os.rename("/content/BraTS2024/BraTS2024-BraTS-GLI-AdditionalTrainingData", "/content/BraTS2024/val")
+    shell = get_ipython().system
+    shell("synapse get syn64314352 --version 1")
+    shell("unzip /content/BraTS2024-BraTS-GLI-AdditionalTrainingData.zip -d /content/BraTS2024")
+    shell("mv /content/BraTS2024/training_data_additional /content/BraTS2024/val")
 
 
 def plot_all_modalities(folder_path):
