@@ -3,6 +3,23 @@ import numpy as np
 import nibabel as nib
 import random
 import scipy
+import shutil
+
+
+def create_testset(train_dir, test_dir):
+
+    random.seed(42)
+
+    os.makedirs(test_dir, exist_ok=True)
+    # List all subject folders in train
+    train_subjects = sorted(os.listdir(train_dir))
+
+    # Randomly select 100 for test
+    test_subjects = random.sample(train_subjects, 100)
+
+    # Move them to test
+    for subject in test_subjects:
+        shutil.move(os.path.join(train_dir, subject), os.path.join(test_dir, subject))
 
 
 def load_nifti(path):

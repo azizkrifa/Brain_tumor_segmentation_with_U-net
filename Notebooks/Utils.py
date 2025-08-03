@@ -10,11 +10,46 @@ import seaborn as sns
 from glob import glob
 from IPython import get_ipython
 
+
 def download_data():
     shell = get_ipython().system
     shell("synapse get syn64314352 --version 1")
     shell("unzip /content/BraTS2024-BraTS-GLI-AdditionalTrainingData.zip -d /content/BraTS2024")
     shell("mv /content/BraTS2024/training_data_additional /content/BraTS2024/val")
+
+
+def display_dataset_distribution(train_dir, val_dir, test_dir):
+   
+    train_subjects_num = len(sorted(glob(os.path.join(train_dir, "*"))))
+    val_subjects_num = len(sorted(glob(os.path.join(val_dir, "*"))))
+    test_subjects_num = len(sorted(glob(os.path.join(test_dir, "*"))))
+
+    # Create DataFrame in long format
+    df = pd.DataFrame({
+        "Dataset": ["Train", "Validation", "Test"],
+        "Count": [train_subjects_num, val_subjects_num, test_subjects_num]
+    })
+
+    df = df.sort_values(by='Count', ascending=False)
+
+    # Plot
+    plt.figure(figsize=(6, 4))
+    ax = sns.barplot(data=df, x='Dataset', y='Count', palette='viridis')
+    plt.title('Sample Count per Dataset')
+
+    # Add count labels inside bars
+    for p in ax.patches:
+        height = p.get_height()
+        ax.text(
+            p.get_x() + p.get_width() / 2,
+            height / 2,
+            f'{int(height)}',
+            ha='center', va='center',
+            color='white', fontsize=12
+        )
+
+    plt.tight_layout()
+    plt.show()
 
 
 def plot_all_modalities(folder_path):
