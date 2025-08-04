@@ -14,8 +14,11 @@ from IPython import get_ipython
 def download_data():
     shell = get_ipython().system
     shell("synapse get syn64314352 --version 1")
+    shell("synapse get syn60086071 --version 2 ")
     shell("unzip /content/BraTS2024-BraTS-GLI-AdditionalTrainingData.zip -d /content/BraTS2024")
+    shell("unzip /content/BraTS2024-BraTS-GLI-TrainingData.zip -d /content/BraTS2024")
     shell("mv /content/BraTS2024/training_data_additional /content/BraTS2024/val")
+    shell("mv /content/BraTS2024/training_data /content/BraTS2024/train")
 
 
 def display_dataset_distribution(train_dir, val_dir, test_dir):
