@@ -20,6 +20,9 @@ def create_testset(train_dir, test_dir):
     # Move them to test
     for subject in test_subjects:
         shutil.move(os.path.join(train_dir, subject), os.path.join(test_dir, subject))
+        print(f"Moved subject {subject} to test directory.")
+        
+    print(f"Moved {len(test_subjects)} subjects to test directory.")
 
 
 def load_nifti(path):

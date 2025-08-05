@@ -17,8 +17,8 @@ def download_data():
     shell("synapse get syn60086071 --version 2 ")
     shell("unzip /content/BraTS2024-BraTS-GLI-AdditionalTrainingData.zip -d /content/BraTS2024")
     shell("unzip /content/BraTS2024-BraTS-GLI-TrainingData.zip -d /content/BraTS2024")
-    shell("mv /content/BraTS2024/training_data_additional /content/BraTS2024/val")
-    shell("mv /content/BraTS2024/training_data /content/BraTS2024/train")
+    shell("mv /content/BraTS2024/training_data_additional  /content/BraTS2024/val")
+    shell("mv /content/BraTS2024/training_data1_v2  /content/BraTS2024/train")
 
 
 def display_dataset_distribution(train_dir, val_dir, test_dir):
@@ -104,6 +104,7 @@ def plot_all_modalities(folder_path):
 def plot_segmentation(seg_path):
 
     volume=nib.load(seg_path).get_fdata()
+    print(f"Loaded {seg_path[45:]} with shape {volume.shape}")
 
     # Define fixed colors for labels 0–3
     cmap = ListedColormap(['black', 'gray', 'lightgreen', 'red'])
@@ -146,8 +147,8 @@ def plot_segmentation(seg_path):
     plt.show()
 
 
-def dislay_dataset_distribution(dataset_dir):
-   
+def display_dataset_distribution(dataset_dir):
+
     train_subjects_num = len(sorted(glob(os.path.join(dataset_dir, "train", "*"))))
     val_subjects_num = len(sorted(glob(os.path.join(dataset_dir, "val", "*"))))
     test_subjects_num = len(sorted(glob(os.path.join(dataset_dir, "test", "*"))))
