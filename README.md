@@ -123,13 +123,62 @@ Accurate segmentation of brain tumors, especially `gliomas`, is vital for diagno
   where $\mu$ and $\sigma$ are the mean and standard deviation of the image volume. This helps the model converge faster by standardizing intensity values.
   
   #### 1.4.3 Resizing Volumes  
-   All modalities are resized from `240×240×155` to a fixed shape of `128×128×128` using linear interpolation (`order=1`). This standard shape ensures uniformity for training in 3D CNNs.
+   All modalities are resized from `182×218×182` to a fixed shape of `128×128×128` using linear interpolation (`order=1`). This standard shape ensures uniformity for training in 3D CNNs.
   
   #### 1.4.4 Resizing Segmentation Masks  
    Segmentation masks are resized using nearest-neighbor interpolation (`order=0`) to preserve discrete class labels (e.g., tumor regions). The output mask is cast to `uint8` type.
   
   #### 1.4.5 Multi-modal Stacking  
   The normalized and resized volumes from each modality are stacked along the last axis, resulting in a single 4D volume with shape `128×128×128×4`. This format allows the model to learn from all four modalities simultaneously.
+
+-------
+
+## 2. ⚙️ Model Setup 
+
+This project uses a **3D U-Net** architecture designed for semantic segmentation of volumetric medical data (e.g., MRI, CT scans). The model processes 3D input volumes with multiple channels and outputs voxel-wise class predictions.
+
+### 2.1 🏗️ Architecture Overview
+
+The 3D U-Net follows an **encoder–decoder structure with skip connections**, enabling precise spatial localization by combining high-resolution features from the encoder with upsampled outputs in the decoder.
+
+ <p align="center">
+    <img width="552" height="430" alt="image" src="https://github.com/user-attachments/assets/a078acc6-906d-4f90-baf4-94022d454eac" />
+ </p>
+
+- **Input Shape**: `(128, 128, 128, 4)` — a 3D volume with 4 input channels.
+- **Output**: A `(128, 128, 128, num_classes)` softmax probability map for multi-class segmentation (`num_classes = 4` by default).
+
+### 2.2 🔧 Components
+
+- **Conv Block**: Each block consists of two 3D convolutional layers (kernel size = 3×3×3), each followed by **Batch Normalization** and **ReLU** activation.
+
+  <p align="center">
+    <img width="422" height="167" alt="image" src="https://github.com/user-attachments/assets/c08b0c73-f5f4-4d2a-b87a-e5d06c316972" />
+  </p>
+
+- **Encoder Blocks**: Stacked convolutional blocks followed by 3D max pooling (`2×2×2`), progressively reducing spatial dimensions while increasing feature depth.
+  
+  <p align="center">
+     <img width="334" height="99" alt="image" src="https://github.com/user-attachments/assets/bf982fd4-2b26-4caa-94bf-c663d72e4526" />
+  </p>
+
+- **Bottleneck**: A deeper convolutional block (512 filters) acting as the bridge between encoder and decoder.
+  
+ <p align="center">
+     <img width="287" height="61" alt="image" src="https://github.com/user-attachments/assets/77e2bd5c-add6-4f54-9f92-13553a4ffc7e" />
+ </p>    
+  
+- **Decoder Blocks**: Each block upsamples the feature map (`2×2×2`), concatenates it with the corresponding encoder feature map (skip connection), and applies convolutional layers to refine the representation.
+  
+ <p align="center">
+   <img width="368" height="106" alt="image" src="https://github.com/user-attachments/assets/0f51e529-5c27-46b6-9a8d-c337900be7ef" />
+ </p>
+
+- **Output Layer**: A final 1×1×1 3D convolution followed by a `softmax` activation to assign class probabilities to each voxel.
+
+### 2.3 🔄 Skip Connections
+
+Skip connections between encoder and decoder blocks ensure the preservation of fine-grained spatial information, which is critical for accurate segmentation boundaries.
 
 
 
