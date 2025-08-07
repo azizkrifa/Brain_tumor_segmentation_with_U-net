@@ -107,14 +107,15 @@ def plot_segmentation(seg_path):
     print(f"Loaded {seg_path[45:]} with shape {volume.shape}")
 
     # Define fixed colors for labels 0–3
-    cmap = ListedColormap(['black', 'gray', 'lightgreen', 'red'])
+    cmap = ListedColormap(['black', 'gray', 'lightgreen', 'red' ,'blue'])
 
     # Define label names
     labels = {
         0: "Background/Rest of the brain",
         1: "Necrotic/Non-enhancing Tumor",
         2: "Edema",
-        3: "Enhancing Tumor"
+        3: "Enhancing Tumor",
+        4: "Resection Cavity"
     }
 
     patches = [mpatches.Patch(color=cmap.colors[i], label=labels[i]) for i in range(len(labels))]

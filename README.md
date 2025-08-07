@@ -46,6 +46,7 @@ Accurate segmentation of brain tumors, especially `gliomas`, is vital for diagno
     - **1:** Necrotic and non-enhancing tumor core  
     - **2:** Peritumoral edema  
     - **3:** Enhancing tumor
+    - **4:** Resection Cavity
     
     This multi-modal data enables the model to learn robust features across different tissue contrasts to accurately segment the tumor subregions.
 
