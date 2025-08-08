@@ -8,7 +8,7 @@ Accurate segmentation of brain tumors, especially `gliomas`, is vital for diagno
 
  ### 1.1 MRI Modalities and Segmentation Labels
 
-  - The BraTS 2024 dataset includes `four MRI modalities` for each patient, providing complementary information to better identify tumor regions:
+  - The BraTS 2024 dataset includes `four MRI modalities` for each patient (each modality is 3D volume size of **182×218×182**), providing complementary information to better identify tumor regions:
     
     - **T1-weighted (T1):** Provides detailed `anatomical structure` of the brain.  
     - **T1-contrast enhanced (T1c):** Highlights areas with a disrupted blood-brain barrier, such as `enhancing tumors`.  
@@ -42,11 +42,11 @@ Accurate segmentation of brain tumors, especially `gliomas`, is vital for diagno
 
   - Along with these MRI scans, **segmentation masks (seg)** are provided. These masks label each voxel `(3D pixel)` as one of the following classes:
     
-    - **0:** Background (non-tumor tissue)  
-    - **1:** Necrotic and non-enhancing tumor core  
-    - **2:** Peritumoral edema  
-    - **3:** Enhancing tumor
-    - **4:** Resection Cavity
+    - **0: Background** : Normal brain tissue and non-tumor regions. 
+    - **1: Necrotic and non-enhancing tumor core** : Dead tumor tissue or tumor regions without contrast uptake.
+    - **2: Peritumoral edema** : Swelling or fluid accumulation around the tumor.
+    - **3: Enhancing tumor** : Active tumor areas.
+    - **4: Resection Cavity** : Space left after surgical removal of tumor.
     
     This multi-modal data enables the model to learn robust features across different tissue contrasts to accurately segment the tumor subregions.
 
@@ -62,7 +62,7 @@ Accurate segmentation of brain tumors, especially `gliomas`, is vital for diagno
     Below is an example visualization of the segmentation mask for patient X across some slices:
     
   <p align="center">
-    <img width="7140" height="4734" alt="seg 02415" src="https://github.com/user-attachments/assets/cc047f52-11ce-4239-851d-d7cef5c5b628" />
+    <img width="7140" height="4734" alt="Sans titre" src="https://github.com/user-attachments/assets/962da203-8716-4845-979b-f24176e4a12e" />
   </p>
 
  ### 1.3 Dataset Structure|Ditribution
@@ -143,11 +143,11 @@ This project uses a **3D U-Net** architecture designed for semantic segmentation
 The 3D U-Net follows an **encoder–decoder structure with skip connections**, enabling precise spatial localization by combining high-resolution features from the encoder with upsampled outputs in the decoder.
 
  <p align="center">
-    <img width="552" height="430" alt="image" src="https://github.com/user-attachments/assets/a078acc6-906d-4f90-baf4-94022d454eac" />
+   <img width="574" height="439" alt="image" src="https://github.com/user-attachments/assets/3b9bf51b-a1a3-4ad4-847d-530a4630b5a4" />
  </p>
 
 - **Input Shape**: `(128, 128, 128, 4)` — a 3D volume with 4 input channels.
-- **Output**: A `(128, 128, 128, num_classes)` softmax probability map for multi-class segmentation (`num_classes = 4` by default).
+- **Output**: A `(128, 128, 128, num_classes)` softmax probability map for multi-class segmentation (`num_classes = 5` by default).
 
 ### 2.2 🔧 Components
 
