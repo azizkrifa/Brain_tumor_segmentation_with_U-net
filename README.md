@@ -68,11 +68,11 @@ Accurate segmentation of brain tumors, especially `gliomas`, is vital for diagno
  ### 1.3 Dataset Structure|Ditribution
   **Note**: The test set was created by `randomly selecting 100 samples` from the original `training se`t to evaluate the model on unseen data while preserving label distribution.
   <p align="center">
-    <img width="590" height="390" alt="Sans titre" src="https://github.com/user-attachments/assets/ba8972c5-f62b-445e-8d99-8bdbc90d072d" />
+    <img width="590" height="390" alt="Sans titre" src="https://github.com/user-attachments/assets/131bc1cd-bd29-4312-a9dd-9bbe7e74d240" />
   </p>
   
 ```bash
-  BraTS 2024 dataset/
+  BraTS2024/
 ├── train/
 │   ├── BraTS-GLI-00001-000/
 │   │   ├── BraTS-GLI-00001-000_t2f.nii.gz
