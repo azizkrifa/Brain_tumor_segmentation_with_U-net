@@ -138,7 +138,7 @@ Accurate segmentation of brain tumors, especially `gliomas`, is vital for diagno
 
 This project uses a **3D U-Net** architecture designed for semantic segmentation of volumetric medical data (e.g., MRI, CT scans). The model processes 3D input volumes with multiple channels and outputs voxel-wise class predictions.
 
-### 2.1 🏗️ Architecture Overview
+### 2.1 Architecture Overview
 
 The 3D U-Net follows an **encoder–decoder structure with skip connections**, enabling precise spatial localization by combining high-resolution features from the encoder with upsampled outputs in the decoder.
 
@@ -149,7 +149,7 @@ The 3D U-Net follows an **encoder–decoder structure with skip connections**, e
 - **Input Shape**: `(128, 128, 128, 4)` — a 3D volume with 4 input channels.
 - **Output**: A `(128, 128, 128, num_classes)` softmax probability map for multi-class segmentation (`num_classes = 5` by default).
 
-### 2.2 🔧 Components
+### 2.2 Components
 
 - **Conv Block**: Each block consists of two 3D convolutional layers (kernel size = 3×3×3), each followed by **Batch Normalization** and **ReLU** activation.
 
@@ -177,9 +177,29 @@ The 3D U-Net follows an **encoder–decoder structure with skip connections**, e
 
 - **Output Layer**: A final 1×1×1 3D convolution followed by a `softmax` activation to assign class probabilities to each voxel.
 
-### 2.3 🔄 Skip Connections
+### 2.3 Skip Connections
 
 Skip connections between encoder and decoder blocks ensure the preservation of fine-grained spatial information, which is critical for accurate segmentation boundaries.
+
+------
+
+## 3. 🏋️‍♂️ Training Strategy  
+
+To optimize model performance, we adopted a well-structured training strategy combining multiple callbacks and monitoring techniques:  
+
+### 3.1 Compilation
+  The model is compiled with the **Adam optimizer**, using `sparse_categorical_crossentropy` as the loss function. Additionally, we track a custom evaluation metric: `multiclass_dice_coefficient`, which provides better insight into segmentation quality than accuracy alone.  
+
+### 3.2 Callbacks
+  - **EarlyStopping**: Monitors the validation loss and stops training if no improvement is observed after 5 consecutive epochs. This prevents overfitting and saves computation time by restoring the best weights.  
+  - **ModelCheckpoint**: Automatically saves the best-performing model (`best_model.h5`) based on validation loss, ensuring we keep the optimal version during training.  
+  - **CSVLogger**: Logs the training and validation metrics into `training_log.csv` for reproducibility and further analysis.  
+  - **ReduceLROnPlateau**: Dynamically reduces the learning rate by a factor of 0.5 if the validation loss does not improve for 3 epochs, allowing the optimizer to fine-tune more effectively in later stages.
+
+### 3.3 Epochs  
+   The model is trained for up to **50 epochs**, with early stopping and dynamic learning rate scheduling determining the actual duration.  
+
+
 
 
 
