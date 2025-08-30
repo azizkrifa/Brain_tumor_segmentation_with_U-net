@@ -50,6 +50,8 @@ Accurate segmentation of brain tumors, especially `gliomas`, is vital for diagno
     
     This multi-modal data enables the model to learn robust features across different tissue contrasts to accurately segment the tumor subregions.
 
+------
+
   ### 1.2 Patient MRI Scan and Segmentation Dimensions
 
   - Each patient's MRI scan in the BraTS 2024 dataset has a fixed 3D volume size of **(182,218,182)** representing:
@@ -64,6 +66,8 @@ Accurate segmentation of brain tumors, especially `gliomas`, is vital for diagno
   <p align="center">
     <img width="7140" height="4734" alt="Sans titre" src="https://github.com/user-attachments/assets/962da203-8716-4845-979b-f24176e4a12e" />
   </p>
+
+  ------
 
  ### 1.3 Dataset Structure|Ditribution
   **Note**: The test set was created by `randomly selecting 100 samples` from the original `training se`t to evaluate the model on unseen data while preserving label distribution.
@@ -104,6 +108,8 @@ Accurate segmentation of brain tumors, especially `gliomas`, is vital for diagno
   
   To ensure consistency across all MRI scans and prepare the data for model training, we applied the following preprocessing steps to each subject:
   
+  ------
+  
   #### 1.4.1 Loading NIfTI Files  
   Each subject includes five volumes:  
   - T1 (T1n)  
@@ -113,6 +119,8 @@ Accurate segmentation of brain tumors, especially `gliomas`, is vital for diagno
   - Segmentation mask  
   
   These files are loaded using the `nibabel` library, which reads `.nii.gz` medical imaging files and returns 3D NumPy arrays.
+
+  ------
   
   #### 1.4.2 Normalization  
   For each modality (T1, T1c, T2, FLAIR), we apply `z-score normalization`:  
@@ -122,12 +130,18 @@ Accurate segmentation of brain tumors, especially `gliomas`, is vital for diagno
   </p>
 
   where $\mu$ and $\sigma$ are the mean and standard deviation of the image volume. This helps the model converge faster by standardizing intensity values.
+
+  ------
   
   #### 1.4.3 Resizing Volumes  
    All modalities are resized from `182×218×182` to a fixed shape of `128×128×128` using linear interpolation (`order=1`). This standard shape ensures uniformity for training in 3D CNNs.
+
+  ------
   
   #### 1.4.4 Resizing Segmentation Masks  
    Segmentation masks are resized using nearest-neighbor interpolation (`order=0`) to preserve discrete class labels (e.g., tumor regions). The output mask is cast to `uint8` type.
+
+  ------
   
   #### 1.4.5 Multi-modal Stacking  
   The normalized and resized volumes from each modality are stacked along the last axis, resulting in a single 4D volume with shape `128×128×128×4`. This format allows the model to learn from all four modalities simultaneously.
@@ -136,51 +150,39 @@ Accurate segmentation of brain tumors, especially `gliomas`, is vital for diagno
 
 ## 2. ⚙️ Model Setup 
 
-This project uses a **3D U-Net** architecture designed for semantic segmentation of volumetric medical data (e.g., MRI, CT scans). The model processes 3D input volumes with multiple channels and outputs voxel-wise class predictions.
+This project implements a **3D Hybrid U-Net** designed for brain tumor segmentation on the BRaTS2024 dataset. The network follows the classic **encoder–bottleneck–decoder** structure with skip connections, while integrating **MedNeXt-style convolutional blocks** and **adaptive normalization** for better feature representation:
 
-### 2.1 Architecture Overview
+<table align="center">
+  <tr>
+    <td colspan="2" align="center">
+      <h3>U-Net Architecture for BRaTS2024</h3>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img width="7500" height="10488" alt="U-Net Architecture" src="https://github.com/user-attachments/assets/c1be8077-ef6c-4067-b0b2-b596b51a518b" />
+    </td>
+  </tr>
+</table>
 
-The 3D U-Net follows an **encoder–decoder structure with skip connections**, enabling precise spatial localization by combining high-resolution features from the encoder with upsampled outputs in the decoder.
+---
 
- <p align="center">
-   <img width="574" height="439" alt="image" src="https://github.com/user-attachments/assets/3b9bf51b-a1a3-4ad4-847d-530a4630b5a4" />
- </p>
+### 2.1 Key Features
+- **Encoder–Decoder Design**: Standard U-Net downsampling and upsampling paths with skip connections to preserve spatial context.  
+- **MedNeXt-inspired Blocks**: Depthwise/pointwise convolutions with residual connections and lightweight attention (Squeeze-and-Excitation).  
+- **Adaptive Group Normalization**: Dynamically selects the number of groups (fallbacks to LayerNorm when needed).  
+- **3D Convolutions**: Fully 3D operations tailored for volumetric MRI data.  
+- **Dropout Regularization**: Applied within blocks to improve generalization.  
+- **Softmax Output Layer**: Produces voxel-wise multi-class segmentation maps for the 5 BRaTS tumor classes.  
 
-- **Input Shape**: `(128, 128, 128, 4)` — a 3D volume with 4 input channels.
-- **Output**: A `(128, 128, 128, num_classes)` softmax probability map for multi-class segmentation (`num_classes = 5` by default).
+---
 
-### 2.2 Components
-
-- **Conv Block**: Each block consists of two 3D convolutional layers (kernel size = 3×3×3), each followed by **Batch Normalization** and **ReLU** activation.
-
-  <p align="center">
-    <img width="422" height="167" alt="image" src="https://github.com/user-attachments/assets/c08b0c73-f5f4-4d2a-b87a-e5d06c316972" />
-  </p>
-
-- **Encoder Blocks**: Stacked convolutional blocks followed by 3D max pooling (`2×2×2`), progressively reducing spatial dimensions while increasing feature depth.
+### 2.2 Architecture Overview
+- **Encoder**: 4 downsampling stages with feature extraction.  
+- **Bottleneck**: High-level semantic feature learning.  
+- **Decoder**: 4 upsampling stages with skip connections for fine-grained reconstruction.  
+- **Output**: 3D segmentation map with tumor subregions.
   
-  <p align="center">
-     <img width="334" height="99" alt="image" src="https://github.com/user-attachments/assets/bf982fd4-2b26-4caa-94bf-c663d72e4526" />
-  </p>
-
-- **Bottleneck**: A deeper convolutional block (512 filters) acting as the bridge between encoder and decoder.
-  
- <p align="center">
-     <img width="287" height="61" alt="image" src="https://github.com/user-attachments/assets/77e2bd5c-add6-4f54-9f92-13553a4ffc7e" />
- </p>    
-  
-- **Decoder Blocks**: Each block upsamples the feature map (`2×2×2`), concatenates it with the corresponding encoder feature map (skip connection), and applies convolutional layers to refine the representation.
-  
- <p align="center">
-   <img width="368" height="106" alt="image" src="https://github.com/user-attachments/assets/0f51e529-5c27-46b6-9a8d-c337900be7ef" />
- </p>
-
-- **Output Layer**: A final 1×1×1 3D convolution followed by a `softmax` activation to assign class probabilities to each voxel.
-
-### 2.3 Skip Connections
-
-Skip connections between encoder and decoder blocks ensure the preservation of fine-grained spatial information, which is critical for accurate segmentation boundaries.
-
 ------
 
 ## 3. 🏋️‍♂️ Training Strategy  
@@ -189,12 +191,16 @@ To optimize model performance, we adopted a well-structured training strategy co
 
 ### 3.1 Compilation
   The model is compiled with the **Adam optimizer**, using `sparse_categorical_crossentropy` as the loss function. Additionally, we track a custom evaluation metric: `multiclass_dice_coefficient`, which provides better insight into segmentation quality than accuracy alone.  
+  
+------
 
 ### 3.2 Callbacks
   - **EarlyStopping**: Monitors the validation loss and stops training if no improvement is observed after 5 consecutive epochs. This prevents overfitting and saves computation time by restoring the best weights.  
   - **ModelCheckpoint**: Automatically saves the best-performing model (`best_model.h5`) based on validation loss, ensuring we keep the optimal version during training.  
   - **CSVLogger**: Logs the training and validation metrics into `training_log.csv` for reproducibility and further analysis.  
   - **ReduceLROnPlateau**: Dynamically reduces the learning rate by a factor of 0.5 if the validation loss does not improve for 3 epochs, allowing the optimizer to fine-tune more effectively in later stages.
+
+------
 
 ### 3.3 Epochs  
    The model is trained for up to **50 epochs**, with early stopping and dynamic learning rate scheduling determining the actual duration.  
