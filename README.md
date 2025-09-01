@@ -189,8 +189,12 @@ This project implements a **3D Hybrid U-Net** designed for brain tumor segmentat
 
 To optimize model performance, we adopted a well-structured training strategy combining multiple callbacks and monitoring techniques:  
 
-### 3.1 Compilation
-  The model is compiled with the **Adam optimizer**, using `sparse_categorical_crossentropy` as the loss function. Additionally, we track a custom evaluation metric: `multiclass_dice_coefficient`, which provides better insight into segmentation quality than accuracy alone.  
+### 3.1 Compilation  
+
+ The model is compiled with both the **Adam** and **SGD (with momentum)** optimizers for experimentation, using a **hybrid loss function** that combines `sparse_categorical_crossentropy` and **Dice loss**. This balances pixel-wise classification with overlap-based segmentation quality.  
+ 
+ For evaluation, we track a custom metric: **`multiclass_dice_coefficient`**, which computes the Dice score across all classes. Unlike accuracy, this metric directly reflects segmentation quality by measuring overlap between predicted and ground truth regions.  
+
   
 ------
 
