@@ -70,7 +70,7 @@ Accurate segmentation of brain tumors, especially `gliomas`, is vital for diagno
   ------
 
  ### 1.3 Dataset Structure|Ditribution
-  **Note**: The test set was created by `randomly selecting 100 samples` from the original `training se`t to evaluate the model on unseen data while preserving label distribution.
+  **Note**: The test set was created by `randomly selecting 100 samples` from the original `training set` to evaluate the model on unseen data while preserving label distribution.
   <p align="center">
     <img width="590" height="390" alt="Sans titre" src="https://github.com/user-attachments/assets/131bc1cd-bd29-4312-a9dd-9bbe7e74d240" />
   </p>
@@ -207,7 +207,33 @@ To optimize model performance, we adopted a well-structured training strategy co
 ------
 
 ### 3.3 Epochs  
-   The model is trained for up to **50 epochs**, with early stopping and dynamic learning rate scheduling determining the actual duration.  
+   The model is trained for up to **50 epochs**, with early stopping and dynamic learning rate scheduling determining the actual duration.
+
+------------
+## 4. 📈 Training Curves
+   
+   <img width="1390" height="490" alt="image" src="https://github.com/user-attachments/assets/3d328e6f-e310-4fb5-88c6-3d57def5a9f8" />
+   
+### **4.1 Multiclass Dice Coefficient**  
+- The **training Dice coefficient** increases rapidly and stabilizes after **~16 epochs**, indicating effective convergence.  
+- The **validation Dice coefficient** follows a similar trend with minor fluctuations, reflecting good generalization.  
+- The limited gap between curves suggests **minimal overfitting** within the first 16 epochs.  
+
+---
+
+### **4.2 Training and Validation Loss**  
+- The **training loss** decreases sharply and converges by **epoch 16**, showing stable optimization.  
+- The **validation loss** closely follows the training loss with slight oscillations.  
+- This confirms that the model reaches an optimal learning state within **16 epochs**.  
+
+---
+
+### **4.3 Summary**  
+- Efficient convergence achieved **before 16 epochs**.  
+- Stable training with strong generalization.  
+- Early stopping is justified, preventing unnecessary training.
+
+
 
 
 
