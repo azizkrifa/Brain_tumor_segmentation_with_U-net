@@ -107,6 +107,8 @@ Accurate segmentation of brain tumors, especially `gliomas`, is vital for diagno
   ### 1.4 Data Preprocessing
   
   To ensure consistency across all MRI scans and prepare the data for model training, we applied the following preprocessing steps to each subject:
+
+  <img width="1654" height="935" alt="BraTS24 Data Processing and Augmentation Workflow" src="https://github.com/user-attachments/assets/53d3d700-56b2-4763-b5ef-5573b052cb2d" />
   
   ------
   
@@ -160,10 +162,11 @@ This project implements a **3D Hybrid U-Net** designed for brain tumor segmentat
   </tr>
   <tr>
     <td align="center">
-      <img width="7500" height="10488" alt="U-Net Architecture" src="https://github.com/user-attachments/assets/c1be8077-ef6c-4067-b0b2-b596b51a518b" />
+      <img width="1607" height="904" alt="Hybrid 3D MedNeXt U-Net Arch" src="https://github.com/user-attachments/assets/c1794351-c289-4a3d-a648-b7679f8f3731" />
     </td>
   </tr>
 </table>
+
 
 ---
 
