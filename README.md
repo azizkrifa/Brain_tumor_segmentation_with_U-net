@@ -69,14 +69,15 @@ Accurate segmentation of brain tumors, especially `gliomas`, is vital for diagno
 
   ------
 
- ### 1.3 Dataset Structure|Ditribution
-  **Note**: The test set was created by `randomly selecting 100 samples` from the original `training set` to evaluate the model on unseen data while preserving label distribution.
-  <p align="center">
-    <img width="590" height="390" alt="Sans titre" src="https://github.com/user-attachments/assets/131bc1cd-bd29-4312-a9dd-9bbe7e74d240" />
-  </p>
-  
+ ### 1.3 Dataset Structure & Distribution
+**Note**: The test set was created by `randomly selecting 100 samples` from the original `training set` to evaluate the model on unseen data while preserving label distribution.
+
+<p align="center">
+  <img width="590" height="390" alt="Sans titre" src="https://github.com/user-attachments/assets/131bc1cd-bd29-4312-a9dd-9bbe7e74d240" />
+</p>
+
 ```bash
-  BraTS2024/
+BraTS2024/
 ├── train/
 │   ├── BraTS-GLI-00001-000/
 │   │   ├── BraTS-GLI-00001-000_t2f.nii.gz
@@ -84,26 +85,39 @@ Accurate segmentation of brain tumors, especially `gliomas`, is vital for diagno
 │   │   ├── BraTS-GLI-00001-000_t1c.nii.gz
 │   │   ├── BraTS-GLI-00001-000_t2w.nii.gz
 │   │   └── BraTS-GLI-00001-000_seg.nii.gz
-│   ├── BraTS-GLI-00002-000/
+│   ├── BraTS-GLI-00005-000/
 │   │   └── ...
 │   └── ...
-
+│ 
 ├── val/
 │   ├── BraTS-GLI-00023-000/
 │   │   ├── ... (same structure as train)
+│   └── BraTS-GLI-00005-000/
+│   │   └── ...
 │   └── ...
-
+│     
 ├── test/
-│   ├── BraTS-GLI-00041-000/
-│   │   ├── BraTS-GLI-00041-000_t2f.nii.gz
-│   │   ├── BraTS-GLI-00041-000_t1n.nii.gz
-│   │   ├── BraTS-GLI-00041-000_t1c.nii.gz
-│   │   ├── BraTS-GLI-00041-000_t2w.nii.gz
-│   │   └── BraTS-GLI-00041-000_seg.nii.gz
+│   ├── BraTS-GLI-00011-000/
+│   │   ├── ... (same structure as train)
 │   └── ...
 ```
 
-  
+#### 1.3.1 Class Presence vs. Voxel Frequency — Training Set
+
+This analysis compares how often each tumor sub-region (label) **appears across cases** versus how much **volume it actually occupies** at the voxel level, highlighting class imbalance in the training split.
+
+<p align="center">
+  <img width="690" height="390" alt="image" src="https://github.com/user-attachments/assets/ac532ab4-762a-47bc-b226-107718635c7c" />
+</p>
+
+#### 1.3.2 Class Presence vs. Voxel Frequency — Validation Set
+
+The same comparison is repeated on the validation split to confirm that the label distribution is consistent with the training set.
+
+<p align="center">
+  <img width="690" height="390" src="https://github.com/user-attachments/assets/eed1dd38-0626-4447-b4e7-8387bdab8fc7" />
+</p>
+
   ### 1.4 Data Preprocessing
   
   To ensure consistency across all MRI scans and prepare the data for model training, we applied the following preprocessing steps to each subject:
